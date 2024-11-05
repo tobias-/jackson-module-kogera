@@ -16,7 +16,7 @@ internal class ValueClassBoxConverter<S : Any?, D : Any>(
     val boxedClass: Class<D>
 ) : StdConverter<S, D>() {
     private val boxMethod = boxedClass.getDeclaredMethod("box-impl", unboxedClass).apply {
-        if (!this.isAccessible) this.isAccessible = true
+        if (!this.canAccess(this)) this.isAccessible = true
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -27,7 +27,7 @@ internal class ValueClassBoxConverter<S : Any?, D : Any>(
 
 internal class ValueClassUnboxConverter<T : Any>(val valueClass: Class<T>) : StdConverter<T, Any?>() {
     private val unboxMethod = valueClass.getDeclaredMethod("unbox-impl").apply {
-        if (!this.isAccessible) this.isAccessible = true
+        if (!this.canAccess(this@ValueClassUnboxConverter)) this.isAccessible = true
     }
 
     override fun convert(value: T): Any? = unboxMethod.invoke(value)

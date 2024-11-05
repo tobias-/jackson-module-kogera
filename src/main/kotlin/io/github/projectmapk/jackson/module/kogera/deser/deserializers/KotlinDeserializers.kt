@@ -20,8 +20,6 @@ import io.github.projectmapk.jackson.module.kogera.jmClass.JmClass
 import io.github.projectmapk.jackson.module.kogera.toSignature
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
-import kotlin.metadata.isSecondary
-import kotlin.metadata.jvm.signature
 
 internal object SequenceDeserializer : StdDeserializer<Sequence<*>>(Sequence::class.java) {
     private fun readResolve(): Any = SequenceDeserializer
@@ -96,7 +94,7 @@ internal class WrapsNullableValueClassBoxDeserializer<S, D : Any>(
     private val inputType: Class<*> = creator.parameterTypes[0]
 
     init {
-        creator.apply { if (!this.isAccessible) this.isAccessible = true }
+        creator.apply { if (!this.canAccess(this)) this.isAccessible = true }
     }
 
     // Cache the result of wrapping null, since the result is always expected to be the same.

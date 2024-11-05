@@ -18,7 +18,7 @@ internal class ConstructorValueCreator<T : Any>(
 ) : ValueCreator<T>() {
     private val declaringClass: Class<T> = constructor.declaringClass
 
-    override val isAccessible: Boolean = constructor.isAccessible
+    override val isAccessible: Boolean = constructor.canAccess(constructor)
     override val callableName: String = constructor.name
     override val valueParameters: List<JmValueParameter>
     override val bucketGenerator: BucketGenerator
@@ -52,7 +52,7 @@ internal class ConstructorValueCreator<T : Any>(
         } as Array<Class<*>>
 
         declaringClass.getDeclaredConstructorBy(defaultTypes).apply {
-            if (!this.isAccessible) this.isAccessible = true
+            if (!this.canAccess(this)) this.isAccessible = true
         }
     }
 

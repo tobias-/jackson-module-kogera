@@ -11,7 +11,6 @@ import kotlin.metadata.ClassKind
 import kotlin.metadata.ClassName
 import kotlin.metadata.KmClass
 import kotlin.metadata.isNullable
-import kotlin.metadata.jvm.signature
 import kotlin.metadata.kind
 
 // Jackson Metadata Class
@@ -19,7 +18,7 @@ internal sealed interface JmClass {
     class CompanionObject(declaringClass: Class<*>, companionObject: String) {
         private val companionField: Field = declaringClass.getDeclaredField(companionObject)
         val type: Class<*> = companionField.type
-        val isAccessible: Boolean = companionField.isAccessible
+        val isAccessible: Boolean = companionField.canAccess(companionField)
         private val factoryFunctions by lazy {
             // Since it is a user-defined factory function that is processed,
             // it always has arguments and the return value is the same as declaringClass.
@@ -33,7 +32,7 @@ internal sealed interface JmClass {
         }
         val instance: Any by lazy {
             // To prevent the call from failing, save the initial value and then rewrite the flag.
-            if (!companionField.isAccessible) companionField.isAccessible = true
+            if (!companionField.canAccess(companionField)) companionField.isAccessible = true
             companionField.get(null)
         }
 

@@ -10,6 +10,7 @@ plugins {
 
     java
     alias(libs.plugins.kotlinter)
+    id("com.jfrog.artifactory") version "5.2.5"
 }
 
 // Since group cannot be obtained by generateKogeraVersion, it is defined as a constant.
@@ -70,6 +71,37 @@ kotlin {
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
+    withJavadocJar()
+    withSourcesJar()
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+        }
+    }
+}
+
+artifactory {
+    val artifactoryUrl: String by project
+    setContextUrl(artifactoryUrl)
+
+    publish {
+        repository {
+            val artifactoryRepo: String by project
+            val artifactory_user: String by project
+            val artifactory_password: String by project
+            repoKey = artifactoryRepo
+            username = artifactory_user
+            password = artifactory_password
+        }
+        defaults {
+            publications("mavenJava")
+            setPublishArtifacts(true)
+            setPublishPom(true)
+        }
+    }
 }
 
 tasks {
@@ -116,10 +148,26 @@ public val kogeraVersion: Version = VersionUtil.parseVersion("$version", "$group
         options.compilerArgs.add("-Xlint:unchecked")
     }
 
+    kotlinSourcesJar {
+        dependsOn.add(generateKogeraVersion)
+    }
+
+    "sourcesJar" {
+        dependsOn(generateKogeraVersion)
+    }
+
+    javadoc {
+        options {
+            this as CoreJavadocOptions
+            addBooleanOption("Xdoclint:none", true)
+        }
+    }
+
     test {
         useJUnitPlatform()
     }
 }
+
 
 publishing {
     publications {

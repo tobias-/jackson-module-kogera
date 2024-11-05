@@ -2,7 +2,7 @@ name: lint-and-test-dev
 on:
   push:
     branches:
-      - develop
+      - fork
     paths:
       - "gradle/**"
       - "**.kts"
@@ -14,7 +14,7 @@ on:
       - .github/workflows/lint-and-test-dev.yml
   pull_request:
     branches:
-      - develop
+      - fork
     types:
       - opened
       - synchronize

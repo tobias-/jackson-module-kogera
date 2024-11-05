@@ -2,7 +2,7 @@ name: test-main
 on:
   push:
     branches:
-      - main
+      - fork
     paths:
       - "gradle/**"
       - "**.kts"
@@ -14,7 +14,7 @@ on:
       - .github/workflows/test-main.yml
   pull_request:
     branches:
-      - main
+      - fork
     types:
       - opened
       - synchronize
